@@ -1,0 +1,47 @@
+{
+    "dataset": {
+        "path": "./wsj0-mix",
+        "sample_rate": 8000,
+        "type": "wsj0-mix",
+        "load_in_mem": true
+    },
+    "model": {
+        "type": "model",
+        "encoder": "conv1d",
+        "separator": "cluster",
+        "output_ratio": 1,
+        "fft_wnd": "sqrt_hann",
+        "dilations": 8,
+        "num_stacks": 4,
+        "input_length": 32000,
+        "embed_size": 20,
+        "filters": {
+            "ae": 256,
+            "1*1-conv": 256,
+            "d-conv": 512
+        },
+        "kernel_size":{
+            "ae": 20,
+            "1*1-conv": 1,
+            "d-conv": 3
+        },
+        "hop": 10
+    },
+    "optimizer": {
+        "decay": 0.0,
+        "epsilon": 1e-08,
+        "lr": 0.001,
+        "momentum": 0.9,
+        "type": "adam"
+    },
+    "training": {
+        "n_speaker":2,
+        "n_output":2,
+        "n_anchor":2,
+        "batch_size": 2,
+        "half_lr_patience": 3,
+        "loss": "sdr",
+        "num_epochs": 100,
+        "path": "models/test"
+    }
+}
