@@ -3,7 +3,7 @@
 KALDI_ROOT=~/kaldi # path to kaldi
 sph2pipe=$KALDI_ROOT/tools/sph2pipe_v2.5/sph2pipe # path to sph2pipe
 
-cd ../WSJ0/; # path to wsj0 with SPHERE file
+cd ../../corpus/WSJ0/; # path to wsj0 with SPHERE file
 ch1=0
 ch2=0
 
@@ -25,12 +25,10 @@ do
         fi
         ((ch1+=`ls | grep .wv1 | wc -l`))
         ((ch2+=`ls | grep .wv2 | wc -l`))
-        echo `ls | grep .wv1 | wc -l`
-        echo `ls | grep .wv2 | wc -l`
 
         for sound in `ls | grep .wv1`; do
           wavfile=${sound::-3}wav
-          $sph2pipe -f wav $sound ~/corpus/wsj0-wav/$folder/$subfold/$wavfile
+          # $sph2pipe -f wav $sound ~/corpus/wsj0-wav/$folder/$subfold/$wavfile
         done
 
         cd ..

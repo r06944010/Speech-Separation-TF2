@@ -21,11 +21,11 @@
 addpath('../../octave/voicebox') # path to voicebox
 data_type = {'tr','cv','tt'};
 %data_type = {'tr'};
-wsj0root = '../'; % YOUR_PATH/, the folder containing wsj0/
-output_dir16k='../wsj0-mix/2speakers/wav16k';
-output_dir8k='../wsj0-mix/2speakers/wav8k';
+wsj0root = '~/corpus'; % YOUR_PATH/, the folder containing wsj0/
+output_dir16k='./wsj0-mix/2speakers/wav16k';
+output_dir8k='./wsj0-mix/2speakers/wav8k';
 
-min_max = {'max'}; %{'min','max'};
+min_max = {'min'}; %{'min','max'};
 
 for i_mm = 1:length(min_max)
     for i_type = 1:length(data_type)
@@ -46,9 +46,9 @@ for i_mm = 1:length(min_max)
         fid=fopen(TaskFile,'r');
         C=textscan(fid,'%s %f %s %f');
         
-        Source1File = ['../wsj0-mix/2speakers/mix_2_spk_' min_max{i_mm} '_' data_type{i_type} '_1'];
-        Source2File = ['../wsj0-mix/2speakers/mix_2_spk_' min_max{i_mm} '_' data_type{i_type} '_2'];
-        MixFile     = ['../wsj0-mix/2speakers/mix_2_spk_' min_max{i_mm} '_' data_type{i_type} '_mix'];
+        Source1File = ['./wsj0-mix/2speakers/mix_2_spk_' min_max{i_mm} '_' data_type{i_type} '_1'];
+        Source2File = ['./wsj0-mix/2speakers/mix_2_spk_' min_max{i_mm} '_' data_type{i_type} '_2'];
+        MixFile     = ['./wsj0-mix/2speakers/mix_2_spk_' min_max{i_mm} '_' data_type{i_type} '_mix'];
         fid_s1 = fopen(Source1File,'w');
         fid_s2 = fopen(Source2File,'w');
         fid_m  = fopen(MixFile,'w');
