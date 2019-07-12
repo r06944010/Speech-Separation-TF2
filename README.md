@@ -1,7 +1,7 @@
 Improved Speech Separation with Time-and-Frequency Cross-domain Joint Embedding and Clustering
 ===
 
-This is a Tensorflow implementation of speaker indepentent source separation describe [here](https://arxiv.org/abs/1904.07845), which will be published at Interspeech 2019. 
+This is a Tensorflow implementation of speaker indepentent source separation describe [here](https://arxiv.org/abs/1904.07845). 
 
 If you find this repo helpful, please kindly cite [my paper](https://arxiv.org/abs/1904.07845). 
 
