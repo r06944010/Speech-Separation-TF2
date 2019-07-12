@@ -28,7 +28,7 @@ do
 
         for sound in `ls | grep .wv1`; do
           wavfile=${sound::-3}wav
-          # $sph2pipe -f wav $sound ~/corpus/wsj0-wav/$folder/$subfold/$wavfile
+          $sph2pipe -f wav $sound ~/corpus/wsj0-wav/$folder/$subfold/$wavfile
         done
 
         cd ..
