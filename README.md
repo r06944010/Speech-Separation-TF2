@@ -41,9 +41,12 @@ Generate WSJ0-2mix (Wall Street Journal with 2-speaker mixture) or WSJ0-3mix
 
 1. Download [official code](http://www.merl.com/demos/deep-clustering/create-speaker-mixtures.zip) or use my modified version in `create_wav_2speakers.m` and `create_wav_3speakers.m`
 2. Download [voicebox](https://github.com/ImperialCollegeLondon/sap-voicebox/tree/master/voicebox)
-3. Steps to run octave on linux:\\
-    (1) run `octave-cli`\\
-    (2) load package `pkg load <pkg-name>`\\
+3. Steps to run octave on linux:
+
+    (1) run `octave-cli`
+
+    (2) load package `pkg load <pkg-name>`
+    	
     (3) run `create_wav_2speakers.m` or `create_wav_3speakers.m`
 
 Citation
