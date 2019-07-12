@@ -1,9 +1,9 @@
-Speaker Separation via Time-and-Frequency Cross-domain Joint Embedding
+Improved Speech Separation with Time-and-Frequency Cross-domain Joint Embedding and Clustering
 ===
 
-This is a Tensorflow implementation of speaker indepentent source separation describe in [Improved Speech Separation with Time-and-Frequency Cross-domain Joint Embedding and Clustering](https://arxiv.org/abs/1904.07845). 
+This is a Tensorflow implementation of speaker indepentent source separation describe [here](https://arxiv.org/abs/1904.07845), which will be published at Interspeech 2019. 
 
-
+If you find this repo helpful, please kindly cite [my paper](https://arxiv.org/abs/1904.07845). 
 
 Environments
 -----
@@ -19,7 +19,7 @@ Usage
 #### Training:
 `python main.py -m train -c json/config.json`
 #### Testing:
-`python main.py -m test -c path_to_model's_config`
+`python main.py -m test -c models/name/config.json`
 
 
 #### Configuration
@@ -33,14 +33,27 @@ config | string | config.json | Path to JSON-formatted config file
 ckpt | string | None | Path to model's checkpoint. If not specfied, will automatically load the latest checkpoint.
 
 
-Dataset
+Dataset Preprocess
 -----
-Wall Street Journal with 2-speaker mixture (WSJ0-2mix)
+From SPHERE to wav : `bash convert_wsj0.sh`
 
-1. [Download here](http://www.merl.com/demos/deep-clustering/)
-2. Extract to `wsj0-mix/`
+Generate WSJ0-2mix (Wall Street Journal with 2-speaker mixture) or WSJ0-3mix
+
+1. Download [official code](http://www.merl.com/demos/deep-clustering/create-speaker-mixtures.zip) or use my modified version in `create_wav_2speakers.m` and `create_wav_3speakers.m`
+2. Download [voicebox](https://github.com/ImperialCollegeLondon/sap-voicebox/tree/master/voicebox)
+3. Steps to run octave on linux:
+    (1) run `octave-cli`
+    (2) load package `pkg load <pkg-name>`
+    (3) run `create_wav_2speakers.m` or `create_wav_3speakers.m`
 
 Citation
 -----
-
+```
+@article{yang2019improved,
+  title={Improved Speech Separation with Time-and-Frequency Cross-domain Joint Embedding and Clustering},
+  author={Yang, Gene-Ping and Tuan, Chao-I and Lee, Hung-Yi and Lee, Lin-shan},
+  journal={arXiv preprint arXiv:1904.07845},
+  year={2019}
+}
+```
 
