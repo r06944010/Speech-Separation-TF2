@@ -50,7 +50,7 @@ Generate WSJ0-2mix (Wall Street Journal with 2-speaker mixture) or WSJ0-3mix
 
 Citation
 -----
-If you find this repo helpful, please kindly cite my paper listed below. 
+If you find this repo helpful, please kindly cite my paper. 
 
 ```
 @article{yang2019improved,
