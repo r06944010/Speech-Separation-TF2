@@ -3,7 +3,6 @@ Improved Speech Separation with Time-and-Frequency Cross-domain Joint Embedding 
 
 This is a Tensorflow implementation of speaker indepentent source separation describe [here](https://arxiv.org/abs/1904.07845). 
 
-If you find this repo helpful, please kindly cite [my paper](https://arxiv.org/abs/1904.07845). 
 
 Environments
 -----
@@ -51,6 +50,8 @@ Generate WSJ0-2mix (Wall Street Journal with 2-speaker mixture) or WSJ0-3mix
 
 Citation
 -----
+If you find this repo helpful, please kindly cite my paper listed below. 
+
 ```
 @article{yang2019improved,
   title={Improved Speech Separation with Time-and-Frequency Cross-domain Joint Embedding and Clustering},
