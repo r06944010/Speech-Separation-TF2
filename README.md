@@ -52,9 +52,9 @@ Citation
 -----
 If you find this repo helpful, please kindly cite our paper. 
 
-```
-Yang, G., Tuan, C., Lee, H., Lee, L. (2019) Improved Speech Separation with Time-and-Frequency Cross-Domain Joint Embedding and Clustering. Proc. Interspeech 2019, 1363-1367, DOI: 10.21437/Interspeech.2019-2181.
 
-G. Yang, S. Wu, Y. Mao, H. Lee and L. Lee, "Interrupted and Cascaded Permutation Invariant Training for Speech Separation," ICASSP 2020 - 2020 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP), Barcelona, Spain, 2020, pp. 6369-6373, doi: 10.1109/ICASSP40776.2020.9053697.
-```
+[1] Yang, G., Tuan, C., Lee, H., Lee, L. (2019) Improved Speech Separation with Time-and-Frequency Cross-Domain Joint Embedding and Clustering. Proc. Interspeech 2019, 1363-1367, DOI: 10.21437/Interspeech.2019-2181.
+
+[2] G. Yang, S. Wu, Y. Mao, H. Lee and L. Lee, "Interrupted and Cascaded Permutation Invariant Training for Speech Separation," ICASSP 2020 - 2020 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP), Barcelona, Spain, 2020, pp. 6369-6373, doi: 10.1109/ICASSP40776.2020.9053697.
+
 
