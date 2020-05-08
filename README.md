@@ -36,14 +36,17 @@ Usage
 
 #### IAC PIT Training:
 **1st stage** : 
+
 Train a model using PIT first : `python main.py -m train -c json/tasnet-1.json`
 
 **2nd stage** : 
+
 Extract the pretrained label assignment of a 1st stage model by using `write_pretrained_perm('tasnet-1', 100)` in [util.py](util.py) to generate a fixed label assignment file in `tasnet-1/perm_idx/100.csv`
 <!-- Then change the `['training']['perm_path']` in the config file `tasnet-2.json` into `models/tasnet-1/perm_idx/100.csv` and `['training']['pit']` into false. -->
 Then train the model using `python main.py -m train -c json/tasnet-2.json`
 
-**3rd stage**
+**3rd stage** : 
+
 Load the 2nd stage model parameters, and continue to train the model with PIT. Which can be simply done by `python main.py -m train -c json/tasnet-3.json`.
 
 #### Configuration
