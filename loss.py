@@ -59,11 +59,31 @@ def pit_loss(y_true, y_pred, config, batch_size, n_speaker, n_output, pit_axis=1
         sdr = evaluation.sdr(y_true[:,:real_spk_num,:], y_pred[:,:real_spk_num,:])
         sdr = tf.reduce_mean(sdr)
     else:
-        sdr = -loss/2
-
-    # if config['model']['discriminator']:
-    #     y_true_mix = tf.reduce_sum(y_true, 1)
-    #     y_pred_mix = tf.reduce_sum(y_pred, 1)
-    #     loss = -tf.reduce_mean(tf.abs(y_true_mix - y_pred_mix))
+        sdr = -loss/n_speaker
 
     return loss, y_pred, sdr, s_perm_choose
+
+
+def fixed_loss(t_true, t_pred, config, batch_size, n_speaker, n_output, s_perm_choose=None):
+    # use pretrained permutation
+    s_perm_idxs = tf.stack([
+        tf.tile(
+            tf.expand_dims(tf.range(batch_size), 1),
+            [1, n_speaker]),
+        s_perm_choose], axis=2)
+
+    s_perm_idxs = tf.reshape(s_perm_idxs, [batch_size*n_speaker, 2])
+    t_pred = tf.gather_nd(t_pred, s_perm_idxs)
+    t_pred = tf.reshape(t_pred, [batch_size, n_speaker, -1])
+
+    loss_type = config['training']['loss']
+    loss = get_loss(loss_type, t_true, t_pred)
+    loss = tf.reduce_mean(loss)
+
+    if loss_type != 'sdr':
+        sdr = evaluation.sdr(t_true, t_pred)
+        sdr = tf.reduce_mean(sdr)
+    else:
+        sdr = -loss/n_speaker
+
+    return loss, t_pred, sdr, s_perm_choose

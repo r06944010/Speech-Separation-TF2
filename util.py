@@ -1,243 +1,14 @@
-# A Wavenet For Speech Denoising - Dario Rethage - 19.05.2017
-# Util.py
-# Utility functions for dealing with audio signals and training a Denoising Wavenet
-import os
-import numpy as np
-import json
-import warnings
-import scipy.signal
-import scipy.stats
-import scipy.io.wavfile
-import soundfile as sf
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
+import os 
+import pandas as pd
+import csv
 
 def myprint(filename, inform):
     print(inform)
     f = open(filename, 'a')
     f.write(str(inform) + '\n')
     f.close()
-
-def compute_receptive_field_length(stacks, dilations, filter_length, target_field_length):
-    # stacks:3, dilations:[1,2,...,512], filter_length:3, target_field_length:1
-    half_filter_length = (filter_length-1) // 2
-    length = 0
-    for d in dilations:
-        length += d*half_filter_length
-    length = 2*length
-    length = stacks * length
-    length += target_field_length
-    return length
-
-
-def wav_to_float(x):
-    try:
-        max_value = np.iinfo(x.dtype).max
-        min_value = np.iinfo(x.dtype).min
-    except:
-        max_value = np.finfo(x.dtype).max
-        min_value = np.finfo(x.dtype).min
-    x = x.astype('float64', casting='safe')
-    x -= min_value
-    x /= ((max_value - min_value) / 2.)
-    x -= 1.
-    return x
-
-
-def float_to_uint8(x):
-    x += 1.
-    x /= 2.
-    uint8_max_value = np.iinfo('uint8').max
-    x *= uint8_max_value
-    x = x.astype('uint8')
-    return x
-
-
-def keras_float_to_uint8(x):
-    x += 1.
-    x /= 2.
-    uint8_max_value = 255
-    x *= uint8_max_value
-    return x
-
-
-def linear_to_ulaw(x, u=255):
-    x = np.sign(x) * (np.log(1 + u * np.abs(x)) / np.log(1 + u))
-    return x
-
-
-def keras_linear_to_ulaw(x, u=255.0):
-    x = keras.backend.sign(x) * (keras.backend.log(1 + u * keras.backend.abs(x)) / keras.backend.log(1 + u))
-    return x
-
-
-def uint8_to_float(x):
-    max_value = np.iinfo('uint8').max
-    min_value = np.iinfo('uint8').min
-    x = x.astype('float32', casting='unsafe')
-    x -= min_value
-    x /= ((max_value - min_value) / 2.)
-    x -= 1.
-    return x
-
-
-def keras_uint8_to_float(x):
-    max_value = 255
-    min_value = 0
-    x -= min_value
-    x /= ((max_value - min_value) / 2.)
-    x -= 1.
-    return x
-
-
-def ulaw_to_linear(x, u=255.0):
-    y = np.sign(x) * (1 / float(u)) * (((1 + float(u)) ** np.abs(x)) - 1)
-    return y
-
-
-def keras_ulaw_to_linear(x, u=255.0):
-    y = keras.backend.sign(x) * (1 / u) * (((1 + u) ** keras.backend.abs(x)) - 1)
-    return y
-
-
-def one_hot_encode(x, num_values=256):
-    if isinstance(x, int):
-        x = np.array([x])
-    if isinstance(x, list):
-        x = np.array(x)
-    return np.eye(num_values, dtype='uint8')[x.astype('uint8')]
-
-
-def one_hot_decode(x):
-    return np.argmax(x, axis=-1)
-
-
-def preemphasis(signal, alpha=0.95):
-    return np.append(signal[0], signal[1:] - alpha * signal[:-1])
-
-
-def binary_encode(x, max_value):
-    if isinstance(x, int):
-        x = np.array([x])
-    if isinstance(x, list):
-        x = np.array(x)
-    width = np.ceil(np.log2(max_value)).astype(int)
-    return (((x[:, None] & (1 << np.arange(width)))) > 0).astype(int)
-
-
-def get_condition_input_encode_func(representation):
-
-        if representation == 'binary':
-            return binary_encode
-        else:
-            return one_hot_encode
-
-
-def ensure_keys_in_dict(keys, dictionary):
-
-    if all (key in dictionary for key in keys):
-        return True
-    return False
-
-
-def get_subdict_from_dict(keys, dictionary):
-
-    return dict((k, dictionary[k]) for k in keys if k in dictionary)
-
-def pretty_json_dump(values, file_path=None):
-
-    if file_path is None:
-        print(json.dumps(values, sort_keys=True, indent=4, separators=(',', ': ')))
-    else:
-        json.dump(values, open(file_path, 'w'), sort_keys=True, indent=4, separators=(',', ': '))
-
-def read_wav(filename):
-    # Reads in a wav audio file, takes the first channel, converts the signal to float64 representation
-
-    audio_signal, sample_rate = sf.read(filename)
-
-    if audio_signal.ndim > 1:
-        audio_signal = audio_signal[:, 0]
-
-    if audio_signal.dtype != 'float64':
-        audio_signal = wav_to_float(audio_signal)
-
-    return audio_signal, sample_rate
-
-
-def load_wav(wav_path, desired_sample_rate):
-
-    sequence, sample_rate = read_wav(wav_path)
-    sequence = ensure_sample_rate(sequence, desired_sample_rate, sample_rate)
-    return sequence
-
-
-def write_wav(x, filename, sample_rate):
-
-    if type(x) != np.ndarray:
-        x = np.array(x)
-
-    with warnings.catch_warnings():
-        warnings.simplefilter("error")
-        sf.write(filename, x, sample_rate)
-        # scipy.io.wavfile.write(filename, sample_rate, x)
-
-
-def ensure_sample_rate(x, desired_sample_rate, file_sample_rate):
-    if file_sample_rate != desired_sample_rate:
-        return scipy.signal.resample_poly(x, desired_sample_rate, file_sample_rate)
-    return x
-
-
-def rms(x):
-    return np.sqrt(np.mean(np.square(x), axis=-1))
-
-
-def normalize(x):
-    max_peak = np.max(np.abs(x))
-    return x / max_peak
-
-
-def get_subsequence_with_speech_indices(full_sequence):
-    signal_magnitude = np.abs(full_sequence)
-
-    chunk_length = 800
-
-    chunks_energies = []
-    for i in range(0, len(signal_magnitude), chunk_length):
-        chunks_energies.append(np.mean(signal_magnitude[i:i + chunk_length]))
-
-    threshold = np.max(chunks_energies) * .1
-
-    onset_chunk_i = 0 # begin of speech > max energy * 0.1
-    for i in range(0, len(chunks_energies)):
-        if chunks_energies[i] >= threshold:
-            onset_chunk_i = i
-            break
-
-    termination_chunk_i = len(chunks_energies)
-    for i in range(len(chunks_energies) - 1, 0, -1):
-        if chunks_energies[i] >= threshold:
-            termination_chunk_i = i
-            break
-
-    num_pad_chunks = 4
-    onset_chunk_i = np.max((0, onset_chunk_i - num_pad_chunks))
-    termination_chunk_i = np.min((len(chunks_energies), termination_chunk_i + num_pad_chunks))
-
-    return [onset_chunk_i*chunk_length, (termination_chunk_i+1)*chunk_length]
-
-
-def extract_subsequence_with_speech(full_sequence):
-
-    indices = get_subsequence_with_speech_indices(full_sequence)
-    return full_sequence[indices[0]:indices[1]]
-
-
-def dir_contains_files(path):
-    for f in os.listdir(path):
-        if not f.startswith('.'):
-            return True
-    return False
 
 def count_params(_vars=None, scope=None):
     total_params = 0
@@ -260,3 +31,42 @@ def total_params():
             variable_parametes *= dim.value
         total_parameters += variable_parametes
     print("Total number of trainable parameters: {}".format(total_parameters))
+
+def write(csvfile, audioname, perm, epoch, n_speaker):
+    f = open(csvfile, 'w')
+    w = csv.writer(f)
+    header = ['audio']
+    for i in range(epoch):
+        header.append('epoch'+str(i+1))
+    w.writerow(header)
+
+    perm_dict = {audioname[k]:v for k,v in perm.items()}
+
+    for key, value in perm_dict.items():
+        w.writerow([key] + [i[0] for i in value])
+        for spk in range(1, n_speaker):
+            w.writerow([''] +  [i[spk] for i in value])
+    f.close()
+
+def load_perm(config, mode, g_global_step, dataset, size, _type='perm'):
+    data = pd.read_csv(config['training']['path']+'/'+str(mode)+'_'+_type+'.csv')
+    perm = []
+    for e in range(1, g_global_step*config['training']['batch_size']//20000+1):
+        perm.append(data['epoch'+str(e)].values.reshape(-1,2))
+    utt_idx = [data['audio'][2*i] for i in range(size)]
+    myorder = []
+    for i in range(size):
+        myorder.append(utt_idx.index(dataset.file_base[i]))
+    perm = np.transpose(np.array(perm), (1,0,2))
+    adjust_perm = [perm[i] for i in myorder]
+
+    return {i: list(adjust_perm[i]) for i in range(size) }
+
+def write_pretrained_perm(model, epoch):
+    data = pd.read_csv(os.path.join('models', model, 'tr_perm.csv'))
+    perm = data['epoch'+str(epoch)].values.reshape(-1,2)
+
+    if not os.path.exists(os.path.join('models', model, 'perm_idx')):
+        os.mkdir(os.path.join('models', model, 'perm_idx'))
+
+    np.savetxt(os.path.join('models', model, 'perm_idx', str(epoch)+'.csv'), perm, fmt='%i', delimiter=',')

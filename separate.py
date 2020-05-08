@@ -3,7 +3,6 @@
 
 from __future__ import division
 import os
-import util
 import tqdm
 import numpy as np
 import scipy.signal

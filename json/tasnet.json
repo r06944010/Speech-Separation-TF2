@@ -1,20 +1,18 @@
 {
     "dataset": {
         "path": "./wsj0-mix",
+        "maxmin":"min",
         "sample_rate": 8000,
         "type": "wsj0-mix",
         "load_in_mem": true
     },
     "model": {
-        "type": "cross-domain",
+        "type": "tasnet",
         "encoder": "conv1d",
-        "separator": "cluster",
-        "output_ratio": 1,
-        "fft_wnd": "sqrt_hann",
+        "skip": false,
         "dilations": 8,
         "num_stacks": 4,
         "input_length": 32000,
-        "embed_size": 20,
         "filters": {
             "ae": 256,
             "1*1-conv": 256,
@@ -25,7 +23,7 @@
             "1*1-conv": 1,
             "d-conv": 3
         },
-        "hop": 10
+        "sigmoid": false
     },
     "optimizer": {
         "decay": 0.0,
@@ -37,11 +35,12 @@
     "training": {
         "n_speaker":2,
         "n_output":2,
-        "n_anchor":2,
-        "batch_size": 2,
+        "batch_size": 4,
         "half_lr_patience": 3,
         "loss": "sdr",
         "num_epochs": 100,
-        "path": "models/test"
+        "pit": true,
+        "path": "models/test",
+        "perm_path": null
     }
 }

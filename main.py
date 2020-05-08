@@ -16,7 +16,8 @@ import test
 
 import numpy as np
 import scipy.signal
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
 
 from app.hparams import hparams
 from preprocess import prepro
@@ -55,30 +56,6 @@ def get_dataset(config, mode):
         print('Dataset not Implemented : ' + config['dataset']['type'])
         exit()
 
-def print_params(variables_names=None):
-    if variables_names == None:
-        variables_names = [v.name for v in tf.trainable_variables()]
-    for k in variables_names:
-        print(k)
-    print('======================================================')
-
-def debug():
-    init = tf.global_variables_initializer()
-    sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
-    sess.run(init)
-    exit()
-
-def check_init():
-    uninitialized_vars = []
-    for var in tf.global_variables():
-        try:
-            sess.run(var)
-        except tf.errors.FailedPreconditionError:
-            uninitialized_vars.append(var)
-    for k in uninitialized_vars:
-        print(k)
-    init_new_vars_op = tf.initialize_variables(uninitialized_vars)
-
 def training(config, cla):
     g_global_step = tf.Variable(0, trainable=False, name=config['model']['type']+"_global_step")
 
@@ -96,8 +73,12 @@ def training(config, cla):
     g_learning_rate = tf.placeholder(tf.float32, [])
 
     g_ozer = hparams.get_optimizer(config['optimizer']['type'])(learn_rate=g_learning_rate)
+    
     g_grad = g_ozer.compute_gradients(G.loss, G_vars)
     g_update = g_ozer.apply_gradients(g_grad, global_step=g_global_step)
+
+    g_grad_fix = g_ozer.compute_gradients(G.loss_fix, G_vars)
+    g_update_fix = g_ozer.apply_gradients(g_grad_fix, global_step=g_global_step)
 
     ## restore from checkpoint
     G_save_path = os.path.join(config['training']['path'], 'generat.ckpt')
@@ -116,7 +97,15 @@ def training(config, cla):
     valid_best_sdr = float('-inf')
     valid_wait = 0
 
-    for epoch in range(1, config['training']['num_epochs'] + 1):
+    if config['training']['perm_path'] != None:
+        fixed_perm_list = util.read_pretrained_perm(config['training']['perm_path'], tr_dataset.file_base)
+
+    last_step = sess.run(g_global_step)
+    tr_audio_perm = {i:[] for i in range(20000)} if last_step == 0 else io_tool.load_perm(config, 'tr', last_step, tr_dataset, 20000)
+    cv_audio_perm = {i:[] for i in range(5000)} if last_step == 0 else io_tool.load_perm(config, 'cv', last_step, cv_dataset, 5000)
+
+    for epoch in range(last_step//(20000//config['training']['batch_size'])+1, config['training']['num_epochs'] + 1):
+        
         tr_loss = tr_size = tr_sdr = 0.0
         
         util.myprint(history_file, '-' * 20 + ' epoch {} '.format(epoch) + '-' * 20)
@@ -131,15 +120,27 @@ def training(config, cla):
             try:
                 feed_audio, audio_idx = sess.run(tr_next) if tr_next != None else next(tr_gen)
 
-                g_loss, g_sdr, g_curr_step, _ = sess.run(
-                                        fetches=[G.loss, G.sdr, g_global_step, g_update],
-                                        feed_dict={G.audios: feed_audio, g_learning_rate: glr})
+                if config['training']['pit'] == True:
+                    g_loss, g_sdr, g_curr_step, _, g_perm_idx = sess.run(
+                                            fetches=[G.loss, G.sdr, g_global_step, g_update, G.perm_idxs],
+                                            feed_dict={G.audios: feed_audio, g_learning_rate: glr})
+
+                elif config['training']['perm_path'] != None:
+                    fixed_perm = np.take(fixed_perm_list, audio_idx, axis=0)
+                    g_loss, g_sdr, g_curr_step, _, g_perm_idx = sess.run(
+                                            fetches=[G.loss_fix, G.sdr_fix, g_global_step, g_update_fix, G.perm_idxs_fix],
+                                            feed_dict={G.audios: feed_audio, g_learning_rate: glr, G.fixed_perm: fixed_perm})
+
                 tr_loss += g_loss
                 tr_sdr  += g_sdr
                 tr_size += 1
 
                 print('Train step {}: {} = {:5f}, sdr = {:5f}, lr = {}'.
                       format(g_curr_step, config['training']['loss'], g_loss, g_sdr, glr), end='\r')
+
+                # record label assignment
+                for _i, _id in enumerate(audio_idx):
+                    tr_audio_perm[_id].append(g_perm_idx[_i].tolist())
 
             except (tf.errors.OutOfRangeError, StopIteration):
                 util.myprint(history_file, 'Train step {}: {} = {:5f}, sdr = {:5f}, lr = {}'.
@@ -184,6 +185,8 @@ def training(config, cla):
                         glr /= 2; valid_wait = 0
                 break
 
+        util.write(os.path.join(config['training']['path'], 'tr_perm.csv'), tr_dataset.file_base, tr_audio_perm, epoch, config['training']['n_speaker'])
+        util.write(os.path.join(config['training']['path'], 'cv_perm.csv'), cv_dataset.file_base, cv_audio_perm, epoch, config['training']['n_speaker'])
 
 if __name__ == "__main__":
 

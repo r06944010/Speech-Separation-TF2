@@ -2,16 +2,15 @@ import itertools
 import tensorflow as tf
 from app.hparams import hparams
 from app.modules import Model
-import util
 import loss
 import evaluation
 
 import numpy as np
 import scipy.signal
 
-@hparams.register_model('model')
-class ProposedModel(Model):
-    def __init__(self, config, sess, name='model'):
+@hparams.register_model('cross-domain')
+class CrossDomainModel(Model):
+    def __init__(self, config, sess, name='cross-domain'):
 
         self.dtype = tf.float32
         self.config = config
