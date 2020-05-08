@@ -61,9 +61,9 @@ Generate WSJ0-2mix (Wall Street Journal with 2-speaker mixture) or WSJ0-3mix
     	
     (3) run `create_wav_2speakers.m` or `create_wav_3speakers.m`
 
-Citation
+Reference
 -----
-If you find this repo helpful, please kindly cite our paper. 
+If you find this repo interesting, you can refer to more details in the following papers. 
 
 
 [1] Yang, G., Tuan, C., Lee, H., Lee, L. (2019) Improved Speech Separation with Time-and-Frequency Cross-Domain Joint Embedding and Clustering. Proc. Interspeech 2019, 1363-1367, DOI: 10.21437/Interspeech.2019-2181. [Link to paper](https://www.isca-speech.org/archive/Interspeech_2019/abstracts/2181.html)
