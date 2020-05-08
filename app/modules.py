@@ -2,7 +2,8 @@ from math import sqrt
 from functools import partial
 
 import numpy as np
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
 
 from app.hparams import hparams
 import os

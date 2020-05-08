@@ -131,7 +131,11 @@ class CrossDomainModel(Model):
             self.data_out = conv_out*self.output_ratio + pred_istfts*(1-self.output_ratio)
 
 
-        self.loss, self.pred_output, self.sdr, perm = loss.pit_loss(
+        self.loss, self.pred_output, self.sdr, self.perm_idxs = loss.pit_loss(
+            self.audios, self.data_out, self.config, self.batch_size, self.n_speaker, self.n_output)
+
+        ### fixed loss not implemented yet !!!!!! ###
+        self.loss_fix, self.pred_output_fix, self.sdr_fix, self.perm_idxs_fix = loss.pit_loss(
             self.audios, self.data_out, self.config, self.batch_size, self.n_speaker, self.n_output)
 
 

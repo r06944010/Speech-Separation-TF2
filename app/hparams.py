@@ -6,7 +6,6 @@ import json
 
 import numpy as np
 import scipy.signal
-import tensorflow as tf
 
 # Hyperparameters are in CAPS
 # TODO use tf.app.flags to parse hyperparams from input
