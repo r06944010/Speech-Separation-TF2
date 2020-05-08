@@ -51,7 +51,10 @@ Load the 2nd stage model parameters, and continue to train the model with PIT.
 
 Which can be simply done by `python main.py -m train -c json/tasnet-3.json`.
 
-#### Configuration
+
+Configuration
+-----
+
 A detailed description of all configurable parameters can be found in `json/tasnet-1.json`
 
 #### Optional command-line arguments:
