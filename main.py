@@ -1,6 +1,3 @@
-# A Wavenet For Speech Denoising - Dario Rethage - 19.05.2017
-# Main.py
-
 # python function
 import sys
 import logging

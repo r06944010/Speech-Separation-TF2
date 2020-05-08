@@ -50,14 +50,11 @@ Generate WSJ0-2mix (Wall Street Journal with 2-speaker mixture) or WSJ0-3mix
 
 Citation
 -----
-If you find this repo helpful, please kindly cite my paper. 
+If you find this repo helpful, please kindly cite our paper. 
 
 ```
-@article{yang2019improved,
-  title={Improved Speech Separation with Time-and-Frequency Cross-domain Joint Embedding and Clustering},
-  author={Yang, Gene-Ping and Tuan, Chao-I and Lee, Hung-Yi and Lee, Lin-shan},
-  journal={arXiv preprint arXiv:1904.07845},
-  year={2019}
-}
+Yang, G., Tuan, C., Lee, H., Lee, L. (2019) Improved Speech Separation with Time-and-Frequency Cross-Domain Joint Embedding and Clustering. Proc. Interspeech 2019, 1363-1367, DOI: 10.21437/Interspeech.2019-2181.
+
+G. Yang, S. Wu, Y. Mao, H. Lee and L. Lee, "Interrupted and Cascaded Permutation Invariant Training for Speech Separation," ICASSP 2020 - 2020 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP), Barcelona, Spain, 2020, pp. 6369-6373, doi: 10.1109/ICASSP40776.2020.9053697.
 ```
 
