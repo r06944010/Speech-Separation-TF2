@@ -17,8 +17,8 @@ Results
 -----
 
 
-| No. | Model               | Label Assignment     | SDR`_i` (Validation) | SDR`_i` (Test) |
-| --- |--------             | :----------------:   | :------------------: | :-----:        |
+| No. | Model               | Label Assignment     | SDR$_i$ (Validation) | SDR$_i$ (Test) |
+| --- |--------             | ----------------     | :------------------: | :-----:        |
 | (1) | Tasnet              | PIT                  | 16.2 dB              | 15.8 dB        |
 | (2) | Cross-Domain        | PIT                  | 17.1 dB              | 16.9 dB        |
 | (3) | TasNet              | Fixed Assign (L=100) | 17.3 dB              | 16.9 dB        |
