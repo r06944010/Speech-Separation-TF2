@@ -1,0 +1,46 @@
+{
+    "dataset": {
+        "path": "./wsj0-mix",
+        "maxmin":"min",
+        "sample_rate": 8000,
+        "type": "wsj0-mix",
+        "load_in_mem": true
+    },
+    "model": {
+        "type": "tasnet",
+        "encoder": "conv1d",
+        "skip": false,
+        "dilations": 8,
+        "num_stacks": 4,
+        "input_length": 32000,
+        "filters": {
+            "ae": 256,
+            "1*1-conv": 256,
+            "d-conv": 512
+        },
+        "kernel_size":{
+            "ae": 20,
+            "1*1-conv": 1,
+            "d-conv": 3
+        },
+        "sigmoid": false
+    },
+    "optimizer": {
+        "decay": 0.0,
+        "epsilon": 1e-08,
+        "lr": 0.001,
+        "momentum": 0.9,
+        "type": "adam"
+    },
+    "training": {
+        "n_speaker":2,
+        "n_output":2,
+        "batch_size": 4,
+        "half_lr_patience": 3,
+        "loss": "sdr",
+        "num_epochs": 100,
+        "pit": true,
+        "path": "models/tasnet-1",
+        "perm_path": null
+    }
+}

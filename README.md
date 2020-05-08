@@ -20,7 +20,7 @@ Results
 | No. | Model               | Label Assignment     | SDRi (Validation) | SDRi (Test) |
 | --- |--------             | ----------------     | :------------------: | :-----:        |
 | (1) | Tasnet              | PIT                  | 16.2 dB              | 15.8 dB        |
-| (2) | Cross-Domain        | PIT                  | 17.1 dB              | 16.9 dB        |
+| (2) | CDNet               | PIT                  | 17.1 dB              | 16.9 dB        |
 | (3) | TasNet              | Fixed Assign (L=100) | 17.3 dB              | 16.9 dB        |
 | (4) | TasNet              | Fixed Assign (L=80)  | 17.7 dB              | 17.4 dB        |
 | (5) | TasNet Init from (4)| PIT                  | 18.0 dB              | 17.7 dB        |
@@ -34,6 +34,17 @@ Usage
 #### Testing:
 `python main.py -m test -c models/name/config.json -ckpt chosen_checkpoint`
 
+#### IAC PIT Training:
+**1st stage** : 
+Train a model using PIT first : `python main.py -m train -c json/tasnet-1.json`
+
+**2nd stage** : 
+Extract the pretrained label assignment of a 1st stage model by using `write_pretrained_perm('tasnet-1', 100)` in util.py to generate a fixed label assignment file in `tasnet-1/perm_idx/100.csv`
+<!-- Then change the `['training']['perm_path']` in the config file `tasnet-2.json` into `models/tasnet-1/perm_idx/100.csv` and `['training']['pit']` into false. -->
+Then train the model using `python main.py -m train -c json/tasnet-2.json`
+
+**3rd stage**
+Load the 2nd stage model parameters, and continue to train the model with PIT. Which can be simply done by `python main.py -m train -c json/tasnet-3.json`.
 
 #### Configuration
 A detailed description of all configurable parameters can be found in `json/config.json`

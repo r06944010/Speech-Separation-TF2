@@ -186,7 +186,6 @@ def training(config, cla):
                 break
 
         util.write(os.path.join(config['training']['path'], 'tr_perm.csv'), tr_dataset.file_base, tr_audio_perm, epoch, config['training']['n_speaker'])
-        util.write(os.path.join(config['training']['path'], 'cv_perm.csv'), cv_dataset.file_base, cv_audio_perm, epoch, config['training']['n_speaker'])
 
 if __name__ == "__main__":
 

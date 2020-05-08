@@ -39,8 +39,8 @@
         "half_lr_patience": 3,
         "loss": "sdr",
         "num_epochs": 100,
-        "pit": true,
-        "path": "models/test",
-        "perm_path": null
+        "pit": false,
+        "path": "models/tasnet-2",
+        "perm_path": "models/tasnet-1/perm_idx/100.csv"
     }
 }
