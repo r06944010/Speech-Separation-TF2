@@ -1,12 +1,10 @@
-# A Wavenet For Speech Denoising - Dario Rethage - 19.05.2017
-# datasets.py
-
 import util
 import os
 import numpy as np
 import logging
 from tqdm import tqdm
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
 
 class WSJ0():
 

@@ -42,6 +42,8 @@
         "half_lr_patience": 3,
         "loss": "sdr",
         "num_epochs": 100,
-        "path": "models/test"
+        "pit": true,
+        "path": "models/cdnet",
+        "perm_path": null
     }
 }

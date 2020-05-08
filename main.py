@@ -101,8 +101,7 @@ def training(config, cla):
         fixed_perm_list = util.read_pretrained_perm(config['training']['perm_path'], tr_dataset.file_base)
 
     last_step = sess.run(g_global_step)
-    tr_audio_perm = {i:[] for i in range(20000)} if last_step == 0 else io_tool.load_perm(config, 'tr', last_step, tr_dataset, 20000)
-    cv_audio_perm = {i:[] for i in range(5000)} if last_step == 0 else io_tool.load_perm(config, 'cv', last_step, cv_dataset, 5000)
+    tr_audio_perm = {i:[] for i in range(20000)} if last_step == 0 else util.load_perm(config, 'tr', last_step, tr_dataset, 20000)
 
     for epoch in range(last_step//(20000//config['training']['batch_size'])+1, config['training']['num_epochs'] + 1):
         

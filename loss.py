@@ -16,27 +16,7 @@ def pit_loss(y_true, y_pred, config, batch_size, n_speaker, n_output, pit_axis=1
     y_true_exp = tf.expand_dims(y_true, pit_axis+1) # [batch, n_speaker, 1,        len]
     y_pred_exp = tf.expand_dims(y_pred, pit_axis)   # [batch, 1,         n_output, len]
 
-    if loss_type == 'l1':
-        y_cross_loss = y_true_exp - y_pred_exp
-        y_cross_loss_abs = tf.reduce_sum(tf.abs(y_cross_loss), axis=3)
-        cross_total_loss = y_cross_loss_abs
-
-    elif loss_type == 'l2':
-        y_cross_loss = y_true_exp - y_pred_exp
-        y_cross_loss_abs = tf.reduce_sum(tf.square(y_cross_loss), axis=3)
-        cross_total_loss = y_cross_loss_abs
-
-    elif loss_type == 'snr':
-        cross_total_loss = -evaluation.snr(y_true_exp, y_pred_exp)
-
-    elif loss_type == 'sdr':
-        cross_total_loss = -evaluation.sdr(y_true_exp, y_pred_exp)
-
-    elif loss_type == 'sisnr':
-        cross_total_loss = -evaluation.sisnr(y_true_exp, y_pred_exp)
-
-    elif loss_type == 'sdr_modify':
-        cross_total_loss = -evaluation.sdr_modify(y_true_exp, y_pred_exp)
+    cross_total_loss = get_loss(loss_type, y_true_exp, y_pred_exp)
 
     loss_sets = tf.einsum('bij,pij->bp', cross_total_loss, v_perms_onehot) 
     loss = tf.reduce_min(loss_sets, axis=1)
@@ -87,3 +67,32 @@ def fixed_loss(t_true, t_pred, config, batch_size, n_speaker, n_output, s_perm_c
         sdr = -loss/n_speaker
 
     return loss, t_pred, sdr, s_perm_choose
+
+def get_loss(loss_type, t_true_exp, t_pred_exp, axis=-1):
+    if loss_type == 'l1':
+        y_cross_loss = t_true_exp - t_pred_exp
+        cross_total_loss = tf.reduce_sum(tf.abs(y_cross_loss), axis=axis)
+
+    elif loss_type == 'l2':
+        y_cross_loss = t_true_exp - t_pred_exp
+        cross_total_loss = tf.reduce_sum(tf.square(y_cross_loss), axis=axis)
+
+    elif loss_type == 'snr':
+        cross_total_loss = -evaluation.snr(t_true_exp, t_pred_exp)
+
+    elif loss_type == 'sdr':
+        cross_total_loss = -evaluation.sdr(t_true_exp, t_pred_exp)
+
+    elif loss_type == 'sisnr':
+        cross_total_loss = -evaluation.sisnr(t_true_exp, t_pred_exp)
+
+    elif loss_type == 'sdr_modify':
+        cross_total_loss = -evaluation.sdr_modify(t_true_exp, t_pred_exp)
+
+    elif loss_type == 'sisdr':
+        cross_total_loss = -evaluation.sisdr(t_true_exp, t_pred_exp)
+
+    elif loss_type == 'sym_sisdr':
+        cross_total_loss = -evaluation.sym_sisdr(t_true_exp, t_pred_exp)
+
+    return cross_total_loss

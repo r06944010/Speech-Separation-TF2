@@ -1,5 +1,6 @@
 import itertools
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
 from app.hparams import hparams
 from app.modules import Model
 import loss
@@ -119,7 +120,7 @@ class CrossDomainModel(Model):
             conv_out = pred_istfts = 0
             if self.output_ratio != 0: 
                 output_frame = tf.layers.Dense(self.config["model"]["kernel_size"]["ae"])(output_code[...,:self.config["model"]["filters"]["ae"]])
-                conv_out = tf.contrib.signal.overlap_and_add(signal=output_frame, frame_step=self.fft_hop)
+                conv_out = tf.signal.overlap_and_add(signal=output_frame, frame_step=self.fft_hop)
 
             if self.output_ratio != 1: 
                 phase_mix_expand = tf.expand_dims(phase_mix, 1)
@@ -140,18 +141,37 @@ class CrossDomainModel(Model):
 
 
     def cLN(self, inputs, name):
-        return tf.contrib.layers.layer_norm(
-                    inputs=inputs,
-                    begin_norm_axis=2,
-                    begin_params_axis=-1)
+        # inputs: [batch_size, some len, channel_size]
+
+        with tf.variable_scope('LayerNorm'):
+            channel_size = inputs.shape[-1]
+            E = tf.reduce_mean(inputs, axis=[2], keepdims=True)
+            Var = tf.reduce_mean((inputs - E)**2, axis=[2], keepdims=True)
+            gamma = tf.Variable(tf.ones(shape=(channel_size)), dtype=self.dtype, name='gamma')
+            gamma = tf.reshape(gamma, [1,1,-1])
+            beta = tf.Variable(tf.zeros(shape=(channel_size)), dtype=self.dtype, name='beta')
+            beta = tf.reshape(beta, [1,1,-1])
+            return ((inputs - E) / (Var + 1e-8)**0.5) * gamma + beta
+
 
     def gLN(self, inputs, name):
-        return tf.contrib.layers.layer_norm(
-                    inputs=inputs,
-                    begin_norm_axis=1,
-                    begin_params_axis=-1)
+        # inputs: [batch_size, some len, channel_size]
+
+        with tf.variable_scope('LayerNorm'):
+            channel_size = inputs.shape[-1]
+            E = tf.reduce_mean(inputs, axis=[1, 2], keepdims=True)
+            Var = tf.reduce_mean((inputs - E)**2, axis=[1, 2], keepdims=True)
+            gamma = tf.Variable(tf.ones(shape=(channel_size)), dtype=self.dtype, name='gamma')
+            gamma = tf.reshape(gamma, [1,1,-1])
+            beta = tf.Variable(tf.zeros(shape=(channel_size)), dtype=self.dtype, name='beta')
+            beta = tf.reshape(beta, [1,1,-1])
+            return ((inputs - E) / (Var + 1e-8)**0.5) * gamma + beta
+        
 
     def _depthwise_conv1d(self, inputs, di):
+        # inputs  : NHWC
+        # filters : [filter_height, filter_width, in_channels, channel_multiplier]
+        # rate    : [height, width]
         inputs = tf.expand_dims(inputs, axis=1)
         filters = tf.get_variable(
             "dconv_filters",
@@ -166,6 +186,7 @@ class CrossDomainModel(Model):
         return tf.squeeze(outputs, axis=1)
 
     def prelu(self, _x, name, shared_axes=None, alpha_initializer='zeros', alpha_regularizer=None, alpha_constraint=None):
+        # f(x) = alpha * x for x < 0, f(x) = x for x >= 0
         with tf.variable_scope(name):
             alphas = tf.get_variable('alpha', _x.shape[-1], dtype=tf.float32) # shape = _x.shape[-1]
             pos = tf.nn.relu(_x)
