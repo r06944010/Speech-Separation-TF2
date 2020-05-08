@@ -2,7 +2,9 @@ Implementation of Speech Separation Model
 ===
 
 This is a Tensorflow implementation of Speaker Indepentent Source Separation.
+
 Models we have implemented are (1) [TasNet](https://ieeexplore.ieee.org/document/8707065) and (2) [Cross Domain Joint Embedding and Clustering Network](https://www.isca-speech.org/archive/Interspeech_2019/abstracts/2181.html).
+
 Also, we have implemented an alternative to solve the label ambiguity problem, described in [Interrupted and Cascaded PIT](https://ieeexplore.ieee.org/document/9053697).
 
 
@@ -13,17 +15,18 @@ However, instead of executing eagerly, we build the graph first as done in TF v1
 
 Results
 -----
-No. | Model | Label Assignment | SDR$_i$ (Validation) | SDR$_i$ (Test)
----|-------- | ---- | ------- | -----
-(1) |Tasnet | PIT | 16.2 dB | 15.8 dB
-(2) |Cross-Domain | PIT | 17.1 dB | 16.9 dB
-(3) |TasNet | Fixed Assign (L=100) | 17.3 dB | 16.9 dB
-(4) |TasNet | Fixed Assign (L=80) | 17.7 dB | 17.4 dB
-(5) |TasNet Init from (4)| PIT | 18.0 dB | 17.7 dB
+No. | Model               | Label Assignment     | SDR$_i$ (Validation) | SDR$_i$ (Test)
+--- |--------             | ----------------     | -------------------- | -----
+(1) | Tasnet              | PIT                  | 16.2 dB              | 15.8 dB
+(2) | Cross-Domain        | PIT                  | 17.1 dB              | 16.9 dB
+(3) | TasNet              | Fixed Assign (L=100) | 17.3 dB              | 16.9 dB
+(4) | TasNet              | Fixed Assign (L=80)  | 17.7 dB              | 17.4 dB
+(5) | TasNet Init from (4)| PIT                  | 18.0 dB              | 17.7 dB
+
+
 
 Usage
 -----
-
 
 #### Training:
 `python main.py -m train -c json/config.json`
