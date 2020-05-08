@@ -41,7 +41,7 @@ Train a model using PIT first : `python main.py -m train -c json/tasnet-1.json`
 
 **2nd stage** : 
 
-Extract the pretrained label assignment of a 1st stage model by using `write_pretrained_perm('tasnet-1', 100)` in [util.py](util.py) to generate a fixed label assignment file in `tasnet-1/perm_idx/100.csv`
+Extract the pretrained label assignment of a 1st stage model by using `write_pretrained_perm('tasnet-1', 100)` in [util.py](util.py) to generate a fixed label assignment file in `tasnet-1/perm_idx/100.csv` (default epoch = 100)
 <!-- Then change the `['training']['perm_path']` in the config file `tasnet-2.json` into `models/tasnet-1/perm_idx/100.csv` and `['training']['pit']` into false. -->
 Then train the model using `python main.py -m train -c json/tasnet-2.json`
 
